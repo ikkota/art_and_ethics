@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>芸術と倫理をめぐる現代的諸問題</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scholarly Neutrals -->
+    <!-- Application Structure Plan: The SPA uses a card-based dashboard structure instead of a linear scroll. The main screen presents the core question and four clickable cards for 'Theory', 'AI Ethics', 'Cultural Identity', and 'Game Ethics'. This non-linear, hub-and-spoke model encourages user-driven exploration of topics in any order, making the content feel more like an interactive educational tool than a static presentation. Clicking a card reveals that section's content with a clear 'back' button, ensuring simple navigation. This was chosen over a simple scroll to increase engagement and allow for focused consideration of each complex topic. -->
+    <!-- Visualization & Content Choices: Since the source is text-only, concepts are translated into interactive diagrams using HTML/CSS and JS. [Theory]: A three-card layout compares Autonomism, Moralism, and Ethicism. The Ethicism card features an interactive example (a 'joke card' that flips on click) to demonstrate how ethical flaws become aesthetic flaws. Goal: Clarify abstract concepts. Method: HTML/JS interaction. [AI]: A simple flowchart visualizes the ambiguous 'author' question. Goal: Illustrate a process. Method: Tailwind CSS layout. [Culture]: A diagram contrasts 'Appropriation' (unequal power dynamic) vs. 'Exchange' (equal). Goal: Compare concepts visually. Method: Tailwind CSS Flexbox. [Games]: An interactive 'Magic Circle' diagram can be toggled to show the barrier between game/reality breaking down. A virtue/vice list illustrates the Virtue Ethics concept. Goal: Make theoretical models tangible. Method: HTML/JS interaction. NO SVG/Mermaid used. No quantitative charts were needed. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8;
+            color: #3C3C3C;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .interactive-diagram-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 200px;
+            height: auto;
+            max-height: 400px;
+        }
+        .joke-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .joke-card.flipped .joke-card-inner {
+            transform: rotateY(180deg);
+        }
+        .joke-card-front, .joke-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .joke-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" class="container mx-auto px-4 py-8 md:py-12">
+
+        <header id="main-header" class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2">芸術と倫理をめぐる現代的諸問題</h1>
+            <p class="text-lg md:text-xl text-gray-600">— 理論的枠組みからAI・文化・ゲームまで —</p>
+        </header>
+
+        <main id="main-content">
+            <div id="intro-view" class="text-center">
+                 <div class="max-w-3xl mx-auto bg-white/60 p-6 rounded-xl shadow-sm border border-gray-200 mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">本日の問い</h2>
+                    <p class="text-xl text-gray-700 leading-relaxed">「この芸術作品は、倫理的に許されるのか？」</p>
+                    <p class="mt-4 text-gray-600">芸術は、社会や倫理から自由な領域（聖域）なのだろうか？ それとも、社会的な影響力を持つ以上、倫理的な評価の対象となるべきなのだろうか？ このアプリケーションでは、現代の具体的な事例を通してこの根源的な問いを探求する。下のカードをクリックして、各トピックについて学んでいく。</p>
+                </div>
+                
+                <div id="topic-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </div>
+
+            <div id="detail-view" class="hidden">
+                <button id="back-button" class="mb-8 bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded-lg inline-flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    トピック一覧に戻る
+                </button>
+                <div id="detail-content">
+                    <!-- Content for selected topic will be injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const appData = {
+            topics: [
+                {
+                    id: 'theory',
+                    title: '理論的枠組み',
+                    subtitle: '芸術を倫理的に評価することは可能か？',
+                    icon: '🏛️',
+                    content: `
+                        <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">芸術作品を評価する際には、その「美しさ」や「巧みさ」を問う**美的価値**と、その作品が伝えるメッセージの「善し悪し」を問う**倫理的価値**という、二つの異なる軸が存在する。この二つの価値がどう関係するのかについて、歴史的に様々な議論が交わされてきた。ここでは代表的な三つの立場を紹介する。</p>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">① 自律主義 (Autonomism)</h3>
+                                <p class="text-gray-600 mb-4">芸術と倫理は完全に独立した領域である、という立場である。「芸術のための芸術」という思想に代表され、作品の倫理的な欠点は、その作品の美的価値を損なわないと考える。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-24 h-24 rounded-full bg-blue-100 border-2 border-blue-400 flex items-center justify-center font-bold text-blue-800">美的価値</div>
+                                        <div class="w-24 h-24 rounded-full bg-green-100 border-2 border-green-400 flex items-center justify-center font-bold text-green-800">倫理的価値</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">② 道徳主義 (Moralism)</h3>
+                                <p class="text-gray-600 mb-4">芸術の価値はその倫理的な価値によって決まる、という立場である。プラトン以来の伝統的な考え方であり、作品の倫理的な欠点は、そのまま美的価値の欠点となると考える。</p>
+                                 <div class="interactive-diagram-container flex items-center justify-center">
+                                    <div class="relative w-32 h-32">
+                                        <div class="absolute w-24 h-24 rounded-full bg-green-100 border-2 border-green-400 flex items-center justify-center font-bold text-green-800 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">倫理的価値</div>
+                                        <div class="absolute w-32 h-32 rounded-full border-2 border-blue-400 flex items-center justify-center font-bold text-blue-800 opacity-50">美的価値</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">③ 倫理主義 (Ethicism)</h3>
+                                <p class="text-gray-600 mb-4">Berys Gautらが提唱する、より穏健な立場である。作品の倫理的欠点が、その作品の美的欠点と「なりうる」と考える。下のカードをクリックして具体例を確認する。</p>
+                                <div class="interactive-diagram-container p-4">
+                                    <div class="joke-card h-full w-full cursor-pointer perspective-1000" onclick="this.classList.toggle('flipped')">
+                                        <div class="joke-card-inner">
+                                            <div class="joke-card-front bg-yellow-100 border-2 border-yellow-400 rounded-lg">
+                                                <p class="font-bold text-yellow-800">例：差別的なジョーク</p>
+                                                <p class="text-sm mt-2">(クリックして解説を見る)</p>
+                                            </div>
+                                            <div class="joke-card-back bg-yellow-200 border-2 border-yellow-500 rounded-lg text-sm text-yellow-900">
+                                                <p>人種差別的なジョークは、倫理的に問題があるため、聞き手は不快に感じユーモアを感じられない。結果として、それは「面白くないジョーク」となり、**美的にも失敗している**のである。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'ai',
+                    title: 'AIと芸術の倫理',
+                    subtitle: '作者は誰か？ 創造性とは何か？',
+                    icon: '🤖',
+                    content: `
+                        <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">近年の生成AI技術の発展は、芸術の根本的な概念を揺るがしている。AIが生成した美しい画像の裏側には、これまで人類が直面してこなかった新しい倫理的な問いが潜んでいる。ここでは主要な3つの論点を探る。</p>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">論点1: 著作権と作者性</h3>
+                                <p class="text-gray-600 mb-4">AIが生成した作品の「作者」は誰だろうか？この問いには単純な答えがなく、法整備も追いついていないのが現状である。</p>
+                                <div class="interactive-diagram-container border-2 border-gray-200 rounded-lg p-4 flex flex-col justify-center items-center space-y-2 text-sm">
+                                    <div class="bg-blue-100 text-blue-800 p-2 rounded">人間 (プロンプト入力)</div>
+                                    <div class="text-gray-400">↓</div>
+                                    <div class="bg-purple-100 text-purple-800 p-2 rounded">生成AI</div>
+                                    <div class="text-gray-400">↓</div>
+                                    <div class="bg-green-100 text-green-800 p-2 rounded">芸術作品</div>
+                                    <div class="text-gray-400">↓</div>
+                                    <div class="bg-red-100 text-red-800 p-2 rounded font-bold">作者は誰？</div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">論点2: 創造性の本質</h3>
+                                <p class="text-gray-600 mb-4">AIは真に「創造」しているのだろうか？それとも、膨大な既存データを「模倣」し「再構成」しているだけなのだろうか？この問いは、人間の創造性の独自性とは何かを私たちに問い直させる。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center text-center">
+                                    <p class="text-2xl font-bold text-gray-700">創造 <span class="text-gray-300 mx-2">vs</span> 模倣</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">論点3: 労働と公正性</h3>
+                                <p class="text-gray-600 mb-4">多くの生成AIは、インターネット上の無数の作品を、作者の許可や報酬なしに学習データとして利用している。これは技術革新のために許されるのだろうか、それともアーティストからの搾取にあたるのだろうか。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center text-center">
+                                     <p class="text-lg font-semibold text-gray-500">技術革新 <span class="text-red-400 mx-2 font-bold">&lt;—?_—&gt;</span> 搾取</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'culture',
+                    title: '文化的アイデンティティ',
+                    subtitle: '「文化の盗用」とは何か？',
+                    icon: '🌍',
+                    content: `
+                        <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">グローバル化が進む現代において、異なる文化の要素が混ざり合うことは日常的である。しかし、そこには権力関係の不均衡がもたらす倫理的な問題、「文化の盗用」が存在する。これは単なる文化交流とは区別されるべき概念である。</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3 text-green-700">文化交流 (Cultural Exchange)</h3>
+                                <p class="text-gray-600 mb-4">対等な関係にある文化同士が、互いに敬意を払いながら影響を与え合うプロセスである。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center">
+                                    <div class="flex items-center w-full justify-around">
+                                        <div class="text-center">
+                                            <div class="w-24 h-24 bg-blue-100 rounded-lg flex items-center justify-center font-bold">文化A</div>
+                                        </div>
+                                        <div class="font-bold text-3xl text-green-500">⇄</div>
+                                        <div class="text-center">
+                                            <div class="w-24 h-24 bg-yellow-100 rounded-lg flex items-center justify-center font-bold">文化B</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3 text-red-700">文化の盗用 (Cultural Appropriation)</h3>
+                                <p class="text-gray-600 mb-4">支配的な文化圏の人間が、被支配的な文化圏の要素を、その文脈や歴史への敬意なく表面的に借用・利用することである。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center">
+                                    <div class="flex items-center w-full justify-around">
+                                        <div class="text-center">
+                                            <p class="text-xs text-gray-500">マイノリティ</p>
+                                            <div class="w-20 h-20 bg-yellow-100 rounded-lg flex items-center justify-center font-bold">文化B</div>
+                                        </div>
+                                        <div class="font-bold text-3xl text-red-500">→</div>
+                                        <div class="text-center">
+                                            <p class="text-xs text-gray-500">マジョリティ</p>
+                                            <div class="w-32 h-32 bg-blue-100 rounded-lg flex items-center justify-center font-bold">文化A</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'games',
+                    title: 'ビデオゲームと倫理',
+                    subtitle: 'ゲーム内での行為は倫理の対象か？',
+                    icon: '🎮',
+                    content: `
+                        <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">マンガや映画と異なり、プレイヤーが自ら「行為」を選択するビデオゲームは、特有の倫理的問題を提起する。仮想世界での私たちの振る舞いは、現実の倫理観と全く無関係でいられるのだろうか。</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">論点1：「魔法円 (Magic Circle)」</h3>
+                                <p class="text-gray-600 mb-4">「ゲームは現実とは違うルールで動く特殊な空間であり、そこでの行為は現実の倫理とは無関係だ」という考え方である。しかし、この円の境界は本当に強固なのだろうか？下のボタンで境界線の状態を切り替えてみよう。</p>
+                                <div class="interactive-diagram-container flex items-center justify-center">
+                                    <div id="magic-circle" class="relative w-52 h-52 border-4 border-purple-400 rounded-full flex items-center justify-center transition-all duration-500">
+                                        <span class="font-bold text-purple-700">ゲームの世界</span>
+                                        <div class="absolute -top-8 text-center text-sm">現実世界</div>
+                                        <div class="absolute -bottom-8 text-center text-sm">現実世界</div>
+                                    </div>
+                                </div>
+                                 <button id="toggle-circle" class="mt-4 w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">境界を曖昧にする</button>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h3 class="text-xl font-bold mb-3">論点2: 徳倫理学から見たゲーム</h3>
+                                <p class="text-gray-600 mb-4">「暴力ゲームはプレイヤーを攻撃的にするか？」という問いだけでなく、「このゲームをプレイすることは、私をどのような人間にしていくのか？」という問いが重要である。ゲームはプレイヤーのどのような「徳」あるいは「悪徳」を育む可能性があるだろうか。</p>
+                                <div class="interactive-diagram-container p-4 space-y-4">
+                                    <div>
+                                        <h4 class="font-semibold text-green-700">育まれる可能性のある「徳」</h4>
+                                        <ul class="list-disc list-inside text-gray-600 text-sm">
+                                            <li>協力、協調性</li>
+                                            <li>忍耐、粘り強さ</li>
+                                            <li>戦略的思考、計画性</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-red-700">助長される可能性のある「悪徳」</h4>
+                                        <ul class="list-disc list-inside text-gray-600 text-sm">
+                                            <li>残酷さ、他者への無関心</li>
+                                            <li>自己中心的な思考</li>
+                                            <li>短期的な報酬への依存</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            ],
+            init() {
+                this.renderTopicCards();
+                document.getElementById('back-button').addEventListener('click', () => this.showIntroView());
+            },
+            renderTopicCards() {
+                const container = document.getElementById('topic-cards');
+                let html = '';
+                this.topics.forEach(topic => {
+                    html += `
+                        <div class="card bg-white rounded-xl shadow-md p-6 cursor-pointer border border-gray-200 text-center" data-topic-id="${topic.id}">
+                            <div class="text-5xl mb-4">${topic.icon}</div>
+                            <h3 class="text-xl font-bold text-gray-800">${topic.title}</h3>
+                            <p class="text-gray-500 mt-1">${topic.subtitle}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                container.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener('click', (e) => this.showDetailView(e.currentTarget.dataset.topicId));
+                });
+            },
+            showDetailView(topicId) {
+                const topic = this.topics.find(t => t.id === topicId);
+                if (!topic) return;
+
+                document.getElementById('intro-view').classList.add('hidden');
+                const detailView = document.getElementById('detail-view');
+                const detailContent = document.getElementById('detail-content');
+                
+                detailContent.innerHTML = `<h2 class="text-3xl font-bold text-center mb-6">${topic.icon} ${topic.title}</h2>${topic.content}`;
+                detailView.classList.remove('hidden');
+                window.scrollTo(0, 0);
+
+                if (topicId === 'games') {
+                    this.initGameTopicInteractions();
+                }
+            },
+            showIntroView() {
+                document.getElementById('detail-view').classList.add('hidden');
+                document.getElementById('intro-view').classList.remove('hidden');
+                document.getElementById('detail-content').innerHTML = '';
+                 window.scrollTo(0, 0);
+            },
+            initGameTopicInteractions() {
+                const toggleButton = document.getElementById('toggle-circle');
+                const magicCircle = document.getElementById('magic-circle');
+                toggleButton.addEventListener('click', () => {
+                    magicCircle.classList.toggle('border-dashed');
+                    magicCircle.classList.toggle('opacity-50');
+                    if(toggleButton.innerText.includes('曖昧に')){
+                        toggleButton.innerText = '境界を明確にする';
+                    } else {
+                        toggleButton.innerText = '境界を曖昧にする';
+                    }
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            appData.init();
+        });
+    </script>
+</body>
+</html>
+
